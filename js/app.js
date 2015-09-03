@@ -11,7 +11,13 @@
     vrEffect,
     controls,
     orbitControls,
-    webVRManager;
+    webVRManager,
+    sounds = {
+      hiHat: 'audio/CHINESE TD_2.wav',
+      drumDeep: 'audio/218458__thomasjaunism__pacific-island-drum-2 (1).wav',
+      drumKick: 'audio/190551__nabz871__kick-drum-hard-3.wav',
+      drumSnare: 'audio/82238__kevoy__snare-drum.wav'
+    };
 
   function init() {
 
@@ -55,10 +61,11 @@
     // Debug axes
     //initDebugAxes(100);
 
+    testAudio();
+
     window.addEventListener('resize', onResize, false);
 
   }
-
 
   function initModels() {
 
@@ -222,6 +229,31 @@
       scene.add(object);
 
     });
+
+  }
+
+  function playSound(name) {
+    var audio = new Audio(sounds[name]);
+    audio.play();
+  }
+
+  function testAudio() {
+
+    setTimeout(function() {
+      playSound('hiHat');
+    }, 1000);
+
+    setTimeout(function() {
+      playSound('drumDeep');
+    }, 3000);
+
+    setTimeout(function() {
+      playSound('drumKick');
+    }, 5000);
+
+    setTimeout(function() {
+      playSound('drumSnare');
+    }, 7000);
 
   }
 
