@@ -64,13 +64,13 @@
 
     objLoader.load( 'models/drum2.obj', function ( object ) {
 
-      console.log('Loaded model', object);
+      console.log('Loaded drum model', object);
 
       object.traverse( function ( child ) {
 
         if ( child instanceof THREE.Mesh ) {
 
-          console.log('child mesh', child);
+          //console.log('child mesh', child);
 
           if (child.name.indexOf('Circle') > -1) {
             child.material = drumMaterialSkinWhite;
@@ -109,11 +109,43 @@
 
   }
 
+  function loadHiHat(posArray) {
+
+    var hiHatMaterialSilver = new THREE.MeshPhongMaterial({color: 0xcccccc});
+    var hiHatMaterialGold = new THREE.MeshPhongMaterial({color: 0xb08a6e});
+
+    objLoader.load( 'models/hihat.obj', function ( object ) {
+
+      console.log('Loaded hi hat model', object);
+
+      object.traverse( function ( child ) {
+
+        //console.log('');
+
+        if ( child instanceof THREE.Mesh ) {
+
+          child.material = hiHatMaterialSilver;
+
+        }
+
+      });
+
+      object.scale.set(30, 30, 30);
+      object.position.set(posArray[0], posArray[1], posArray[2]);
+
+      scene.add(object);
+
+    });
+
+  }
+
   function initModels() {
 
-    loadDrum('red', [-150, -30, 30]);
-    loadDrum('blue', [0, -30, 0]);
-    loadDrum('red', [150, -30, 30]);
+    loadDrum('red', [-200, -70, 30]);
+    loadDrum('blue', [-70, -50, 0]);
+    loadDrum('red', [50, -50, 30]);
+
+    loadHiHat([250, -10, 30]);
 
   }
 
