@@ -1,0 +1,12 @@
+# Blender MTL File: 'None'
+# Material Count: 1
+
+newmtl Tables.003
+Ns 19.607843
+Ka 0.500000 0.500000 0.500000
+Kd 0.599216 0.599216 0.599216
+Ks 0.200000 0.200000 0.200000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Tables_Dif.jpg

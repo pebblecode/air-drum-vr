@@ -1,0 +1,43 @@
+body {
+    font-family: helvetica neue, lucida grande, sans-serif;
+}
+
+#overlay {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 2em;
+    color: #ff6b2a;
+    text-shadow: 0 0 3px #3c1606, 0 0 6px #3c1606;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#overlay p {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#timer {
+    position: absolute;
+    min-width: 100px;
+    top: 25px;
+    right: 0;
+    font-size: 3em;
+    color: #ff6b2a;
+    text-shadow: 0 0 3px #3c1606, 0 0 6px #3c1606;
+}
+
+button {
+    border: none;
+    background: #ff6b2a;
+    color: #fff;
+    font-size: 1.6em;
+    padding: 15px;
+    min-width: 180px;
+    border-radius: 15px;
+    margin-bottom: 2em;
+    text-shadow: 0 0 6px #3c1606;
+    box-shadow: 0 0 3px #3c1606;
+    cursor: pointer;
+}
