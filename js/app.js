@@ -195,41 +195,92 @@
 
   }
 
+  function playSoundOnGesture(frame, gesture) {
+    if (gesture.handIds.length < 1)
+      return;
+      
+    sounds['drumDeep'].play();
+  }
+
+  function gestureStuff(frame) {
+    frame.gestures.forEach(function(gesture) {
+      switch (gesture.type){
+        case "circle":
+            console.log("Circle Gesture");              
+            break;
+        case "keyTap":
+            console.log("Key Tap Gesture");
+            break;
+        case "screenTap":
+            console.log("Screen Tap Gesture");
+            break;
+        case "swipe":
+            if (gesture.state == "start")
+            {                
+              console.log("Swipe Gesture start");
+            }
+            else
+            {
+              console.log("Swipe Gesture update or stop");
+            }
+            break;
+      }
+    });
+  }
+
+  var previousLeftPalmPos = [0, 0, 0];
+  var previousRightPalmPos = [0, 0, 0];
+
+  function handleHand(hand, previousHandPos) {
+
+    if (Math.abs(previousHandPos[1] - hand.palmPosition[1]) < 20 || previousHandPos[1] < hand.palmPosition[1])
+      return;
+
+    console.log("Hand type: " + hand.type);
+    console.log("Palm x: " + hand.palmPosition[0]);
+    console.log("Palm y: " + hand.palmPosition[1]);
+
+    var palmXPosition = hand.palmPosition[0];
+    if (palmXPosition < 0)
+      sounds['drumDeep'].play();
+    else if (palmXPosition > 180)
+      sounds['hiHat'].play();
+    else
+      sounds['drumSnare'].play();
+  }
+
+  function yAxisStuff(frame) {
+    for (var h = 0; h < frame.hands.length; h++){
+        var hand = frame.hands[h];        
+        
+        if (hand.type == "left") {
+          handleHand(hand, previousLeftPalmPos);
+          previousLeftPalmPos = hand.palmPosition;
+        }
+        else {
+          handleHand(hand, previousRightPalmPos);
+          previousRightPalmPos = hand.palmPosition;
+        }
+    }
+  }
+
   var controller = Leap.loop({enableGestures: true})
     .use('boneHand', {
       targetEl: document.body,
       arm: true,
       opacity: 0.5
     })
-      .on('frame', function(frame){
-    if(frame.valid && frame.gestures.length > 0){
-    frame.gestures.forEach(function(gesture){
-        switch (gesture.type){
-          case "circle":
-              console.log("Circle Gesture");
-              break;
-          case "keyTap":
-              console.log("Key Tap Gesture");
-              break;
-          case "screenTap":
-              console.log("Screen Tap Gesture");
-              break;
-          case "swipe":
-              if (gesture.state == "start")
-              {
-                sounds['hiHat'].play();
-                console.log("Swipe Gesture start");
-              }
-              else
-              {
-                console.log("Swipe Gesture update or stop");
-              }
-              break;
-        }
-      });
-      spacesphere.rotation.y += 0.001;
-      planet.rotation.y += 0.002;
-    }});
+    .on('frame', function(frame){
+      if (!frame.valid)
+        return;
+    
+      if (spacesphere && planet) {
+        spacesphere.rotation.y += 0.001;
+        planet.rotation.y += 0.002;
+      }
+      
+      yAxisStuff(frame);
+    });
 
   /* attempting to keep showing frames when not active, not working for some reason:*/
   controller.setBackground(true);
