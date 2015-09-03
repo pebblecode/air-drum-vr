@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Air Drum VR - bonehand lib</title>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.js"></script>
+  <script src="//js.leapmotion.com/leap-0.6.4.js"></script>
+  <script src="//js.leapmotion.com/leap-plugins-0.1.10.js"></script>
+
+  <script src="leap.bone-hand.js"></script>
+  <style>
+    body {
+      margin: 10px;
+      font-family: Helvetica;
+    }
+    canvas.leap-boneHand {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: none;
+    }
+    table, th, td {
+      border: 1px solid #aaa;
+    }
+    table {
+      border-collapse: collapse;
+    }
+    td, th {
+      vertical-align: top;
+      padding: 3px;
+    }
+    th {
+      color: #555;
+    }
+    #view-source {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 10px;
+    }
+  </style>
+
+</head>
+<body>
+</body>
+
+<script>
+
+  //var audio = new Audio('inception.mp3');
+  //var audio = new Audio('99752__menegass__bongo2.wav');
+
+  Leap.loop({enableGestures: true})
+    .use('boneHand', {
+      targetEl: document.body,
+      arm: true,
+      opacity: 0.5
+    })
+      .on('frame', function(frame){
+    if(frame.valid && frame.gestures.length > 0){
+    frame.gestures.forEach(function(gesture){
+        switch (gesture.type){
+          case "circle":
+              console.log("Circle Gesture");              
+              break;
+          case "keyTap":
+              console.log("Key Tap Gesture");
+              break;
+          case "screenTap":
+              console.log("Screen Tap Gesture");
+              break;
+          case "swipe":              
+              if (gesture.state == "start")
+              {
+                //audio.play();              
+                console.log("Swipe Gesture start");
+              }
+              else
+              {
+                console.log("Swipe Gesture update or stop");
+              }
+              break;
+        }
+      });
+    }});
+
+
+
+  // Set up scene
+
+  var scene    = Leap.loopController.plugins.boneHand.scene;
+  var camera   = Leap.loopController.plugins.boneHand.camera;
+  var renderer = Leap.loopController.plugins.boneHand.renderer;
+
+  var plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(80,80),
+    new THREE.MeshPhongMaterial({wireframe: false})
+  );
+
+
+  plane.scale.set(2,2,2);
+  plane.position.set(0,200,-100);
+
+  camera.lookAt( plane.position );
+
+//  scene.add(plane);
+
+  var axisHelper = new THREE.AxisHelper( 100 );
+  scene.add( axisHelper );
+
+  Leap.loopController.on('handFound', function(hand) {
+    document.querySelector('canvas').style.display = 'block';
+  }).on('handLost', function(hand){
+    if (Leap.loopController.frame(0).hands.length === 0){
+      document.querySelector('canvas').style.display = 'none';
+    }
+  });
+
+</script>
+
+</html>
