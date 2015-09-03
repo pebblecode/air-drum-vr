@@ -4,7 +4,13 @@
   var ambientLight,
     spotLight,
     objLoader = new THREE.OBJLoader(),
-    objMtlLoader = new THREE.OBJMTLLoader();
+    objMtlLoader = new THREE.OBJMTLLoader(),
+    sounds = {
+      hiHat: new Audio('audio/CHINESE TD_2.wav'),
+      drumDeep: new Audio('audio/218458__thomasjaunism__pacific-island-drum-2 (1).wav'),
+      drumKick: new Audio('audio/190551__nabz871__kick-drum-hard-3.wav'),
+      drumSnare: new Audio('audio/82238__kevoy__snare-drum.wav')
+    };
 
   function initModels() {
 
@@ -139,7 +145,7 @@
     frame.gestures.forEach(function(gesture){
         switch (gesture.type){
           case "circle":
-              console.log("Circle Gesture");              
+              console.log("Circle Gesture");
               break;
           case "keyTap":
               console.log("Key Tap Gesture");
@@ -147,10 +153,10 @@
           case "screenTap":
               console.log("Screen Tap Gesture");
               break;
-          case "swipe":              
+          case "swipe":
               if (gesture.state == "start")
               {
-                //audio.play();              
+                sounds['hiHat'].play();
                 console.log("Swipe Gesture start");
               }
               else
@@ -196,11 +202,4 @@
 
   initLights();
 
-  Leap.loopController.on('handFound', function(hand) {
-    document.querySelector('canvas').style.display = 'block';
-  }).on('handLost', function(hand){
-    if (Leap.loopController.frame(0).hands.length === 0){
-      document.querySelector('canvas').style.display = 'none';
-    }
-  });
 })();
