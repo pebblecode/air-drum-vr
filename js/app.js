@@ -5,6 +5,7 @@
     camera,
     renderer,
     ambientLight,
+    spotLight,
     directionalLight;
 
   function init() {
@@ -20,6 +21,7 @@
       10000
     );
 
+    camera.position.y = 100;
     camera.position.z = 200;
 
     renderer = new THREE.WebGLRenderer({
@@ -37,20 +39,36 @@
     container.appendChild( renderer.domElement );
 
     // TEMP add cube for now
-    var cube1 = new THREE.Mesh( new THREE.BoxGeometry(100, 100, 100), new THREE.MeshBasicMaterial({color: 0xFF0000}));
-
+    var cube1 = new THREE.Mesh( new THREE.BoxGeometry(100, 100, 100), new THREE.MeshLambertMaterial({color: 0xFF0000}));
     cube1.position.set(0, 0, 0);
-
     scene.add( cube1 );
 
-    ambientLight = new THREE.AmbientLight( 0xFFFFFF );
+    initLights();
+
+    ambientLight = new THREE.AmbientLight( 0x404040 );
     scene.add( ambientLight );
 
-    // debug axes
-    //To use enter the axis length
+    // Debug axes
     initDebugAxes(100);
 
     window.addEventListener('resize', onResize, false);
+
+  }
+
+  function initLights() {
+
+    spotLight = new THREE.SpotLight( 0xFFFFFF, 2.0 );
+
+    spotLight.castShadow = true;
+    //spotLight.onlyShadow = true;
+    spotLight.shadowCameraNear = camera.near;
+
+    spotLight.position.set( 0, 80, 200);
+    spotLight.target.position.set( 0, 0, -100 );
+    //spotLight.shadowCameraVisible = true;
+
+    scene.add( spotLight );
+    scene.add( spotLight.target );
 
   }
 
