@@ -14,11 +14,11 @@
 
   function initModels() {
 
-    loadDrum('red', [-200, -70, 30]);
-    loadDrum('blue', [-70, -50, 0]);
-    loadDrum('red', [50, -50, 30]);
+    loadDrum('red', [-200, 80, 30]);
+    loadDrum('blue', [-70, 90, 0]);
+    loadDrum('red', [70, 90, 30]);
 
-    loadHiHat([250, -10, 30]);
+    loadHiHat([250, 140, -20]);
 
   }
 
@@ -105,7 +105,7 @@
         }
       });
 
-      object.scale.set(30, 30, 30);
+      object.scale.set(30, 25, 30);
       object.position.set(posArray[0], posArray[1], posArray[2]);
 
       scene.add(object);
@@ -119,13 +119,13 @@
     ambientLight = new THREE.AmbientLight( 0x404040 );
     scene.add( ambientLight );
 
-    spotLight = new THREE.SpotLight( 0xFFFFFF, 2.0 );
+    spotLight = new THREE.SpotLight( 0xFFFFFF, 1.0 );
 
     spotLight.castShadow = true;
     //spotLight.onlyShadow = true;
     spotLight.shadowCameraNear = camera.near;
 
-    spotLight.position.set( 0, 500, 700);
+    spotLight.position.set( 0, 1000, 700);
     spotLight.target.position.set( 0, 0, -100 );
     //spotLight.shadowCameraVisible = true;
 
@@ -199,8 +199,8 @@
 
 //  scene.add(plane);
 
-  var axisHelper = new THREE.AxisHelper( 100 );
-  scene.add( axisHelper );
+  //var axisHelper = new THREE.AxisHelper( 100 );
+  //scene.add( axisHelper );
 
   initModels();
 
