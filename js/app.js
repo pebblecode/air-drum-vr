@@ -1,71 +1,10 @@
 (function() {
-
-  var scene = new THREE.Scene(),
-    container = document.getElementById('container'),
-    camera,
-    renderer,
-    ambientLight,
+  //var audio = new Audio('inception.mp3');
+  //var audio = new Audio('99752__menegass__bongo2.wav');
+  var ambientLight,
     spotLight,
     objLoader = new THREE.OBJLoader(),
-    objMtlLoader = new THREE.OBJMTLLoader(),
-    vrEffect,
-    controls,
-    orbitControls,
-    webVRManager,
-    sounds = {
-      hiHat: 'audio/CHINESE TD_2.wav',
-      drumDeep: 'audio/218458__thomasjaunism__pacific-island-drum-2 (1).wav',
-      drumKick: 'audio/190551__nabz871__kick-drum-hard-3.wav',
-      drumSnare: 'audio/82238__kevoy__snare-drum.wav'
-    };
-
-  function init() {
-
-    camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      1,
-      10000
-    );
-
-    camera.position.y = 100;
-    camera.position.z = 200;
-
-    renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      clearColor: new THREE.Color(0xFFFFFF)
-    });
-
-    renderer.autoClear = false;
-    renderer.shadowMapEnabled = true;
-    renderer.shadowMapSoft = true;
-    renderer.shadowMapType = THREE.PCFSoftShadowMap;
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    container.appendChild( renderer.domElement );
-
-    // TEMP add cube for now
-    var cube1 = new THREE.Mesh( new THREE.BoxGeometry(100, 100, 100), new THREE.MeshLambertMaterial({color: 0xFF0000}));
-    cube1.position.set(0, 0, 0);
-    //scene.add( cube1 );
-
-    initModels();
-
-    initLights();
-
-    initVR();
-
-    initControls();
-
-    // Debug axes
-    //initDebugAxes(100);
-
-    testAudio();
-
-    window.addEventListener('resize', onResize, false);
-
-  }
+    objMtlLoader = new THREE.OBJMTLLoader();
 
   function initModels() {
 
@@ -74,69 +13,6 @@
     loadDrum('red', [50, -50, 30]);
 
     loadHiHat([250, -10, 30]);
-
-  }
-
-  function initLights() {
-
-    ambientLight = new THREE.AmbientLight( 0x404040 );
-    scene.add( ambientLight );
-
-    spotLight = new THREE.SpotLight( 0xFFFFFF, 2.0 );
-
-    spotLight.castShadow = true;
-    //spotLight.onlyShadow = true;
-    spotLight.shadowCameraNear = camera.near;
-
-    spotLight.position.set( 0, 500, 700);
-    spotLight.target.position.set( 0, 0, -100 );
-    //spotLight.shadowCameraVisible = true;
-
-    scene.add( spotLight );
-    scene.add( spotLight.target );
-
-  }
-
-  function initDebugAxes(axisLength) {
-
-    // Shorthand function
-    function v(x, y, z) {
-      return new THREE.Vector3(x, y, z);
-    }
-
-    // Create axis (point1, point2, colour)
-    function createAxis(p1, p2, color) {
-      var line, lineGeometry = new THREE.Geometry(),
-        lineMat = new THREE.LineBasicMaterial({color: color, lineWidth: 1});
-      lineGeometry.vertices.push(p1, p2);
-      line = new THREE.Line(lineGeometry, lineMat);
-      scene.add(line);
-    }
-
-    createAxis(v(-axisLength, 0, 0), v(axisLength, 0, 0), 0xFF0000);
-    createAxis(v(0, -axisLength, 0), v(0, axisLength, 0), 0x00FF00);
-    createAxis(v(0, 0, -axisLength), v(0, 0, axisLength), 0x0000FF);
-
-  }
-
-  function initVR() {
-
-    vrEffect = new THREE.VREffect(renderer);
-
-    // Initialize the WebVR manager.
-    webVRManager = new WebVRManager(renderer, vrEffect, {
-      hideButton: false
-    });
-
-    window.addEventListener('message', handlePostMessage);
-
-  }
-
-  function initControls() {
-
-    controls = new THREE.VRControls(camera);
-    orbitControls = new THREE.OrbitControls(camera);
-    orbitControls.noZoom = true;
 
   }
 
@@ -232,62 +108,99 @@
 
   }
 
-  function playSound(name) {
-    var audio = new Audio(sounds[name]);
-    audio.play();
-  }
+  function initLights() {
 
-  function testAudio() {
+    ambientLight = new THREE.AmbientLight( 0x404040 );
+    scene.add( ambientLight );
 
-    setTimeout(function() {
-      playSound('hiHat');
-    }, 1000);
+    spotLight = new THREE.SpotLight( 0xFFFFFF, 2.0 );
 
-    setTimeout(function() {
-      playSound('drumDeep');
-    }, 3000);
+    spotLight.castShadow = true;
+    //spotLight.onlyShadow = true;
+    spotLight.shadowCameraNear = camera.near;
 
-    setTimeout(function() {
-      playSound('drumKick');
-    }, 5000);
+    spotLight.position.set( 0, 500, 700);
+    spotLight.target.position.set( 0, 0, -100 );
+    //spotLight.shadowCameraVisible = true;
 
-    setTimeout(function() {
-      playSound('drumSnare');
-    }, 7000);
+    scene.add( spotLight );
+    scene.add( spotLight.target );
 
   }
 
-  function onResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  }
+  var controller = Leap.loop({enableGestures: true})
+    .use('boneHand', {
+      targetEl: document.body,
+      arm: true,
+      opacity: 0.5
+    })
+      .on('frame', function(frame){
+    if(frame.valid && frame.gestures.length > 0){
+    frame.gestures.forEach(function(gesture){
+        switch (gesture.type){
+          case "circle":
+              console.log("Circle Gesture");              
+              break;
+          case "keyTap":
+              console.log("Key Tap Gesture");
+              break;
+          case "screenTap":
+              console.log("Screen Tap Gesture");
+              break;
+          case "swipe":              
+              if (gesture.state == "start")
+              {
+                //audio.play();              
+                console.log("Swipe Gesture start");
+              }
+              else
+              {
+                console.log("Swipe Gesture update or stop");
+              }
+              break;
+        }
+      });
+    }});
 
-  function handlePostMessage(e) {
-    if (e.data.mode == 'vr') {
-      manager.enterVR();
+  /* attempting to keep showing frames when not active, not working for some reason:*/
+  controller.setBackground(true);
+
+  /* if trying to get to work in head mounted mode:
+  - maybe set optimizeHMD in controller options
+  - maybe use transform plugin with 'vr' option
+  */
+
+  // Set up scene
+
+  var scene    = Leap.loopController.plugins.boneHand.scene;
+  var camera   = Leap.loopController.plugins.boneHand.camera;
+  var renderer = Leap.loopController.plugins.boneHand.renderer;
+
+  var plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(80,80),
+    new THREE.MeshPhongMaterial({wireframe: false})
+  );
+
+
+  plane.scale.set(2,2,2);
+  plane.position.set(0,200,-100);
+
+  camera.lookAt( plane.position );
+
+//  scene.add(plane);
+
+  var axisHelper = new THREE.AxisHelper( 100 );
+  scene.add( axisHelper );
+
+  initModels();
+
+  initLights();
+
+  Leap.loopController.on('handFound', function(hand) {
+    document.querySelector('canvas').style.display = 'block';
+  }).on('handLost', function(hand){
+    if (Leap.loopController.frame(0).hands.length === 0){
+      document.querySelector('canvas').style.display = 'none';
     }
-    if (e.data.mode == 'mono') {
-      manager.exitVR();
-    }
-  }
-
-  function animate() {
-
-    //console.log('animate');
-
-    //renderer.render(scene, camera);
-
-    //camera.lookAt(new THREE.Vector3(0,0,0));
-
-    controls.update();
-    vrEffect.render(scene, camera);
-
-    requestAnimationFrame(animate);
-
-  }
-
-  init();
-  animate();
-
+  });
 })();
