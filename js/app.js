@@ -6,7 +6,8 @@
     renderer,
     ambientLight,
     spotLight,
-    objLoader = new THREE.OBJLoader();
+    objLoader = new THREE.OBJLoader(),
+    objMtlLoader = new THREE.OBJMTLLoader();
 
   function init() {
 
@@ -114,19 +115,32 @@
     var hiHatMaterialSilver = new THREE.MeshPhongMaterial({color: 0xcccccc});
     var hiHatMaterialGold = new THREE.MeshPhongMaterial({color: 0xb08a6e});
 
-    objLoader.load( 'models/hihat.obj', function ( object ) {
+    var count = 0;
+
+    objMtlLoader.load( 'models/hihat.obj', 'models/hihat.mtl', function ( object ) {
 
       console.log('Loaded hi hat model', object);
 
       object.traverse( function ( child ) {
 
-        //console.log('');
+        console.log('Hi hat child', child);
 
         if ( child instanceof THREE.Mesh ) {
 
-          child.material = hiHatMaterialSilver;
+          if (count === 0) {
+            child.material = hiHatMaterialSilver;
+          } else {
+            child.material = hiHatMaterialGold;
+          }
 
+          count++;
         }
+
+        //if ( child instanceof THREE.Mesh ) {
+        //
+        //  child.material = hiHatMaterialSilver;
+        //
+        //}
 
       });
 
