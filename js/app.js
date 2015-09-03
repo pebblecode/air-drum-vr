@@ -182,6 +182,10 @@
   var camera   = Leap.loopController.plugins.boneHand.camera;
   var renderer = Leap.loopController.plugins.boneHand.renderer;
 
+  console.log('renderer', renderer);
+
+  renderer.setClearColor( 0x000000 );
+
   var plane = new THREE.Mesh(
     new THREE.PlaneGeometry(80,80),
     new THREE.MeshPhongMaterial({wireframe: false})
