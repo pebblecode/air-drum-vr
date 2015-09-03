@@ -1,18 +1,14 @@
 (function() {
 
-  var scene,
-    container,
+  var scene = new THREE.Scene(),
+    container = document.getElementById('container'),
     camera,
     renderer,
     ambientLight,
     spotLight,
-    directionalLight;
+    objLoader = new THREE.OBJLoader();
 
   function init() {
-
-    scene = new THREE.Scene();
-
-    container = document.getElementById('container');
 
     camera = new THREE.PerspectiveCamera(
       75,
@@ -41,7 +37,9 @@
     // TEMP add cube for now
     var cube1 = new THREE.Mesh( new THREE.BoxGeometry(100, 100, 100), new THREE.MeshLambertMaterial({color: 0xFF0000}));
     cube1.position.set(0, 0, 0);
-    scene.add( cube1 );
+    //scene.add( cube1 );
+
+    initModels();
 
     initLights();
 
@@ -49,9 +47,73 @@
     scene.add( ambientLight );
 
     // Debug axes
-    initDebugAxes(100);
+    //initDebugAxes(100);
 
     window.addEventListener('resize', onResize, false);
+
+  }
+
+  function loadDrum(color, posArray) {
+
+    var drumMaterialOutsideRed = new THREE.MeshLambertMaterial({color: 0xfe0000});
+    var drumMaterialOutsideBlue = new THREE.MeshLambertMaterial({color: 0x4669dd});
+    var drumMaterialMetal = new THREE.MeshPhongMaterial({color: 0xb08a6e});
+    var drumMaterialSkinWhite = new THREE.MeshLambertMaterial({color: 0xfcfcfc});
+
+    var tempChildNames = [];
+
+    objLoader.load( 'models/drum2.obj', function ( object ) {
+
+      console.log('Loaded model', object);
+
+      object.traverse( function ( child ) {
+
+        if ( child instanceof THREE.Mesh ) {
+
+          console.log('child mesh', child);
+
+          if (child.name.indexOf('Circle') > -1) {
+            child.material = drumMaterialSkinWhite;
+
+          } else if (child.name.indexOf('Sphere') > -1) {
+            child.material = drumMaterialMetal;
+
+          } else if (child.name.indexOf('Line') > -1) {
+            child.material = drumMaterialMetal;
+
+          } else if (child.name.indexOf('Rectangle') > -1) {
+            child.material = drumMaterialSkinWhite;
+
+          } else {
+            child.material = color === 'red' ? drumMaterialOutsideRed : drumMaterialOutsideBlue;
+          }
+
+          if( child.name === 'Object03' ) {
+            child.material = drumMaterialSkinWhite;
+          }
+
+          tempChildNames.push( child.name );
+
+        }
+
+      } );
+
+      console.log(tempChildNames);
+
+      object.scale.set(4, 4, 4);
+      object.position.set(posArray[0], posArray[1], posArray[2]);
+
+      scene.add(object);
+
+    });
+
+  }
+
+  function initModels() {
+
+    loadDrum('red', [-150, -30, 30]);
+    loadDrum('blue', [0, -30, 0]);
+    loadDrum('red', [150, -30, 30]);
 
   }
 
@@ -63,7 +125,7 @@
     //spotLight.onlyShadow = true;
     spotLight.shadowCameraNear = camera.near;
 
-    spotLight.position.set( 0, 80, 200);
+    spotLight.position.set( 0, 500, 700);
     spotLight.target.position.set( 0, 0, -100 );
     //spotLight.shadowCameraVisible = true;
 
@@ -101,7 +163,7 @@
 
   function animate() {
 
-    console.log('animate');
+    //console.log('animate');
 
     renderer.render(scene, camera);
 
