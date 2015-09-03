@@ -5,6 +5,8 @@
     spotLight,
     objLoader = new THREE.OBJLoader(),
     objMtlLoader = new THREE.OBJMTLLoader(),
+    spacesphere,
+    planet,
     sounds = {
       hiHat: new Audio('audio/CHINESE TD_2.wav'),
       drumDeep: new Audio('audio/218458__thomasjaunism__pacific-island-drum-2 (1).wav'),
@@ -29,11 +31,11 @@
     var drumMaterialMetal = new THREE.MeshPhongMaterial({color: 0xb08a6e});
     var drumMaterialSkinWhite = new THREE.MeshLambertMaterial({color: 0xfcfcfc});
 
-    var tempChildNames = [];
+    //var tempChildNames = [];
 
     objLoader.load( 'models/drum2.obj', function ( object ) {
 
-      console.log('Loaded drum model', object);
+      //console.log('Loaded drum model', object);
 
       object.traverse( function ( child ) {
 
@@ -61,13 +63,13 @@
             child.material = drumMaterialSkinWhite;
           }
 
-          tempChildNames.push( child.name );
+          //tempChildNames.push( child.name );
 
         }
 
       } );
 
-      console.log(tempChildNames);
+      //console.log(tempChildNames);
 
       object.scale.set(4, 4, 4);
       object.position.set(posArray[0], posArray[1], posArray[2]);
@@ -87,7 +89,7 @@
 
     objMtlLoader.load( 'models/hihat.obj', 'models/hihat.mtl', function ( object ) {
 
-      console.log('Loaded hi hat model', object);
+      //console.log('Loaded hi hat model', object);
 
       object.traverse( function ( child ) {
 
@@ -111,6 +113,65 @@
       scene.add(object);
 
     });
+
+  }
+
+  function initSpaceScene() {
+
+    var planetGeometry = new THREE.SphereGeometry(200,20,20);
+
+    //Load the planet textures
+    var texture = THREE.ImageUtils.loadTexture("images/planet-512.jpg");
+    var normalmap = THREE.ImageUtils.loadTexture("images/normal-map-512.jpg");
+    var specmap = THREE.ImageUtils.loadTexture("images/water-map-512.jpg");
+
+    var planetMaterial = new THREE.MeshPhongMaterial();
+    planetMaterial.map = texture;
+
+    planetMaterial.specularMap = specmap;
+    planetMaterial.specular = new THREE.Color( 0xff0000 );
+    planetMaterial.shininess = 1;
+
+    planetMaterial.normalMap = normalmap;
+    planetMaterial.normalScale.set(-0.3,-0.3);
+
+    var planet = new THREE.Mesh(planetGeometry, planetMaterial);
+
+    //here we allow the texture/normal/specular maps to wrap
+    planet.material.map.wrapS = THREE.RepeatWrapping;
+    planet.material.map.wrapT = THREE.RepeatWrapping;
+    planet.material.normalMap.wrapS = THREE.RepeatWrapping;
+    planet.material.normalMap.wrapT = THREE.RepeatWrapping;
+    planet.material.specularMap.wrapS = THREE.RepeatWrapping;
+    planet.material.specularMap.wrapT = THREE.RepeatWrapping;
+
+    //here we repeat the texture/normal/specular maps twice along X
+    planet.material.map.repeat.set( 2, 1);
+    planet.material.normalMap.repeat.set( 2, 1);
+    planet.material.specularMap.repeat.set( 2, 1);
+
+    planet.position.x = 0;
+    planet.position.y = 400;
+    planet.position.z = -1400;
+
+    scene.add(planet);
+
+    //Space background is a large sphere
+    var spacetex = THREE.ImageUtils.loadTexture("images/space.jpg");
+    var spacesphereGeo = new THREE.SphereGeometry(2000,20,20);
+    var spacesphereMat = new THREE.MeshPhongMaterial();
+    spacesphereMat.map = spacetex;
+
+    spacesphere = new THREE.Mesh(spacesphereGeo,spacesphereMat);
+
+    //spacesphere needs to be double sided as the camera is within the spacesphere
+    spacesphere.material.side = THREE.DoubleSide;
+
+    spacesphere.material.map.wrapS = THREE.RepeatWrapping;
+    spacesphere.material.map.wrapT = THREE.RepeatWrapping;
+    spacesphere.material.map.repeat.set( 5, 3);
+
+    scene.add(spacesphere);
 
   }
 
@@ -166,6 +227,8 @@
               break;
         }
       });
+      spacesphere.rotation.y += 0.001;
+      planet.rotation.y += 0.002;
     }});
 
   /* attempting to keep showing frames when not active, not working for some reason:*/
@@ -203,6 +266,8 @@
   //scene.add( axisHelper );
 
   initModels();
+
+  initSpaceScene();
 
   initLights();
 
